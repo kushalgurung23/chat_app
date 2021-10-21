@@ -13,13 +13,13 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-
   final chatController = Get.find<ChatController>();
   late String messageText;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         leading: null,
@@ -27,7 +27,8 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
-                chatController.signOut();
+                // chatController.signOut();
+                print(chatController.messages[0].text);
               }),
         ],
         title: const Text('⚡️Chat'),
@@ -38,6 +39,48 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            // StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            //     // snapshot in build is asyncSnapshot which is the latest snapshot data in our stream.
+            //     stream: FirebaseFirestore.instance
+            //         .collection('messages')
+            //         .snapshots(),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.hasData) {
+            //         final messages = snapshot.data!.docs;
+            //         List<Text> messageWidgets = [];
+            //         for (var message in messages) {
+            //           final messageText = message.data()['text'];
+            //           final messageSender = message.data()['sender'];
+            //           final messageWidget =
+            //               Text("$messageText from $messageSender");
+            //           messageWidgets.add(messageWidget);
+            //         }
+            //         return (const Text("$messageText from $messageSender"));
+            //       } else {
+            //         return (const Text('No Message'));
+            //       }
+            //     }),
+            GetX<ChatController>(builder: (controller) {
+              if (controller.messages.isNotEmpty) {
+                List<Text> messageWidgets = [];
+                for (var message in controller.messages) {
+                  final messageText = message.text;
+                  final messageSender = message.sender;
+                  final messageWidget =
+                      Text("$messageText from $messageSender");
+                  messageWidgets.add(messageWidget);
+                }
+                return SingleChildScrollView(
+                  child: Column(
+                    children: messageWidgets,
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: Center(child: CircularProgressIndicator(),),
+                );
+              }
+            }),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
@@ -52,8 +95,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      chatController.sendMessage(messageText: messageText);
+                    onPressed: () async {
+                      await chatController.sendMessage(messageText: messageText);
                     },
                     child: const Text(
                       'Send',

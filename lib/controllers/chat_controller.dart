@@ -1,3 +1,4 @@
+import 'package:chat_app/models/message_model.dart';
 import 'package:chat_app/views/screens/welcome_screen.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,12 +11,13 @@ class ChatController extends GetxController {
 
   // FirebaseUser = User
   late User loggedInUser;
+  final messages = <Message>[].obs;
 
   @override
   void onInit() {
-    // TODO: implement onInit
-    super.onInit();
+    messages.bindStream(getStream());
     getCurrentUser();
+    super.onInit();
   }
 
   void getCurrentUser() {
@@ -30,11 +32,30 @@ class ChatController extends GetxController {
     }
   }
 
-  void sendMessage({required messageText}) {
-    _firestore.collection('messages').add({
+  Future<void> sendMessage({required messageText}) async {
+    await _firestore.collection('messages').add({
       'sender': loggedInUser.email,
       'text': messageText,
     });
+  }
+
+  // void messagesStream() async {
+  //   // Subscribed to streams of query snapshots to listen for changes in messages collection.
+  //   await for (var snapshot in _firestore.collection('messages').snapshots()) {
+  //     for (var message in snapshot.docs) {
+  //       print(message.data()['sender']);
+  //     }
+  //   }
+  // }
+
+  // Stream <List<Message>>: We will get list of Message in future.
+  Stream<List<Message>> getStream() {
+    Stream<QuerySnapshot<Map<String, dynamic>>> stream =
+        _firestore.collection('messages').snapshots();
+    return (stream.map((querySnapshot) => querySnapshot.docs
+        .map((document) => Message(
+            sender: document.data()['sender'], text: document.data()['text']))
+        .toList()));
   }
 
   void signOut() {

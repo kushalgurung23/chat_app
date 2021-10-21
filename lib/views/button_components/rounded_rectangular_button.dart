@@ -6,7 +6,7 @@ class RoundedRectangularButton extends StatelessWidget {
   final String buttonName;
 
   const RoundedRectangularButton(
-      {Key? key,
+      {key,
       required this.onPressed,
       required this.color,
       required this.buttonName})
