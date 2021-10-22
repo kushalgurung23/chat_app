@@ -1,5 +1,6 @@
 import 'package:chat_app/models/message_model.dart';
 import 'package:chat_app/views/screens/welcome_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,35 +27,33 @@ class ChatController extends GetxController {
       final user = _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
+        print("Oho: " + loggedInUser.toString());
       }
     } catch (e) {
       throw Exception(e);
     }
   }
 
-  Future<void> sendMessage({required messageText}) async {
-    await _firestore.collection('messages').add({
+  void sendMessage(
+      {required String messageText,
+      required TextEditingController textEditingController}) {
+    textEditingController.clear();
+    _firestore.collection('messages').add({
       'sender': loggedInUser.email,
       'text': messageText,
+      'time': DateTime.now().millisecondsSinceEpoch,
     });
   }
-
-  // void messagesStream() async {
-  //   // Subscribed to streams of query snapshots to listen for changes in messages collection.
-  //   await for (var snapshot in _firestore.collection('messages').snapshots()) {
-  //     for (var message in snapshot.docs) {
-  //       print(message.data()['sender']);
-  //     }
-  //   }
-  // }
 
   // Stream <List<Message>>: We will get list of Message in future.
   Stream<List<Message>> getStream() {
     Stream<QuerySnapshot<Map<String, dynamic>>> stream =
-        _firestore.collection('messages').snapshots();
+        _firestore.collection('messages').orderBy("time").snapshots();
     return (stream.map((querySnapshot) => querySnapshot.docs
         .map((document) => Message(
-            sender: document.data()['sender'], text: document.data()['text']))
+            sender: document.data()['sender'],
+            text: document.data()['text'],
+            time: DateTime.now().millisecondsSinceEpoch))
         .toList()));
   }
 

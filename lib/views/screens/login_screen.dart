@@ -25,62 +25,62 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Hero(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Flexible(
+                child: Hero(
                   tag: 'logoTag',
                   child: SizedBox(
                     height: 200.0,
                     child: Image.asset('images/logo.png'),
                   ),
                 ),
-                const SizedBox(
-                  height: 48.0,
-                ),
-                TextField(
-                    keyboardType: TextInputType.emailAddress,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                    onChanged: (value) {
-                      email = value;
-                    },
-                    decoration: kTextFieldDecoration.copyWith(
-                        hintText: 'Enter your email address')),
-                const SizedBox(
-                  height: 8.0,
-                ),
-                TextField(
-                    obscureText: true,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                    onChanged: (value) {
-                      password = value;
-                    },
-                    decoration: kTextFieldDecoration.copyWith(
-                        hintText: 'Enter your password')),
-                const SizedBox(
-                  height: 24.0,
-                ),
-                Obx(() => loginController.showSpinner.isFalse
-                    ? RoundedRectangularButton(
-                        onPressed: () {
-                          loginController.signInUser(
-                              emailAddress: email, password: password);
-                        },
-                        color: Colors.lightBlueAccent,
-                        buttonName: "Log In")
-                    : const Center(
-                        child: CircularProgressIndicator(),
-                      )),
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 48.0,
+              ),
+              TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
+                  onChanged: (value) {
+                    email = value;
+                  },
+                  decoration: kTextFieldDecoration.copyWith(
+                      hintText: 'Enter your email address')),
+              const SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                  obscureText: true,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
+                  onChanged: (value) {
+                    password = value;
+                  },
+                  decoration: kTextFieldDecoration.copyWith(
+                      hintText: 'Enter your password')),
+              const SizedBox(
+                height: 24.0,
+              ),
+              Obx(() => loginController.showSpinner.isFalse
+                  ? RoundedRectangularButton(
+                      onPressed: () {
+                        loginController.signInUser(
+                            emailAddress: email, password: password);
+                      },
+                      color: Colors.lightBlueAccent,
+                      buttonName: "Log In")
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    )),
+            ],
           ),
         ),
       ),
